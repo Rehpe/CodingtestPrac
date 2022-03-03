@@ -12,7 +12,7 @@
 # 이후 N번만큼 얼음 틀의 형태가 주어짐(공백 없이)
 #출력
 # 생기는 얼음의 갯수
-
+from collections import deque
 
 n, m = map(int, input().split())
 icemap = []
@@ -34,20 +34,58 @@ def dfs(x,y):
         dfs(x,y-1) #좌
         dfs(x+1,y) #하
         dfs(x,y+1) #우
-        return True
+        return True #네방향 탐색이 다 끝나고 탐색할 것이 더 없다면 true
     return False
-        
 
-result = 0
+
+dfsresult = 0
 for i in range(n):
     for j in range(m):
         if dfs(i,j) == True:
-            result += 1
+            dfsresult += 1
     
 
-print(result)
+#이동 방향 정의 (상-하-좌-우 순)
+dx = [-1,1,0,0]
+dy = [0,0,-1,1]
 
+def bfs(x,y):
+        queue = deque()
+        queue.append((x,y))
+        icemap[x][y] = 1
+
+        while queue:
+            x, y = queue.popleft()
+            for i in range(4):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if nx >=n or ny>=m or nx<=-1 or ny<=-1:
+                    continue
+                if icemap[nx][ny] ==1:
+                    continue
+                if icemap[nx][ny] ==0:
+                    queue.append((nx,ny))
+                    icemap[nx][ny] =1
+
+
+bfsresult = 0
+for a in range(n):
+    for b in range(m):
+        if icemap[a][b] ==0:
+            bfs(a,b)
+            bfsresult+=1        
+      
+
+# print(dfsresult)
+print(bfsresult)
 
 
 #37항 True가 어떻게 한 덩어리당 한번만 호출이 될 수 있는지 아직 이해가 부족함
+#재귀함수가 값을 반환하는 것에 대한 질문
+#재귀함수가 끝나면 보통 값을 반환하지 않음
+#값을 반환하는 경우에는 값을 쌓거나 결과값을 가지고 계산을 해야하는 경우
+#
 #왜 visited[] 리스트를 따로 만들지 않고 주어진 그래프 자체를 덮어씌우는가? 괜찮은건가?
+#방문 후 원본 그래프를 변화시키지 않고 탐색해야하는 경우 visited[]가 필요하다
+#원본 그래프에 변화를 줌에도 불구하고 중복 탐색할 여지가 있을 경우에도 visited[]가 필요
+
